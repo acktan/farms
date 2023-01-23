@@ -1,7 +1,6 @@
 import pandas as pd
 from datetime import timedelta
 import re
-import typing
 
 class DataLoader():
     """
@@ -32,7 +31,8 @@ class DataLoader():
         df[cols_to_fill] = df[cols_to_fill].fillna(mean)
         return df
     
-    def clean_date_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+    def clean_date_columns(self, 
+                           df: pd.DataFrame) -> pd.DataFrame:
         """ Convert date columns to datetime
         
         Args:

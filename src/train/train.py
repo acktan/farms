@@ -1,8 +1,4 @@
-from distutils.command.config import config
-from pyexpat import XML_PARAM_ENTITY_PARSING_ALWAYS
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import FunctionTransformer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline
 
@@ -36,11 +32,10 @@ class Train():
             pipe = trained model
         """
         
-        dateCols = ['day', 'month']
         preprocessor = ColumnTransformer(
                 [
-                    ('dateEncode', 'passthrough', dateCols),
-                    ('imputer', 'passthrough', X.columns[2:18]),
+                    ('dateEncode', 'passthrough', date_columns),
+                    ('imputer', 'passthrough', self.X_train.columns[2:18]),
                 ]
         )
 
