@@ -1,24 +1,68 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 
 class Evaluator():
     """Evaluate model and variable importances"""
     def __init__(self, 
-                 config: dict[str, object],):
+                 config: dict[str, object],
+                 train_data: pd.DataFrame,
+                 model):
         self.config = config
+        self.train_data = train_data
+        self.model = model
         
     def evaluate_model(self,                  
                        X_test: pd.DataFrame,
-                       y_test: pd.Series,
-                       model):
+                       y_test: pd.Series,):
+                     
         """Evaluate model performance
         
         Args:
             X_test: x val dataframe
             y_test: y val dataframe
-            model: 
         """
-        yhat = model.predict(X_test)
+        yhat = self.model.predict(X_test)
         score = mean_absolute_error(yhat, y_test)
         return score
+    
+    def get_feature_importance(self):
+        """Return feature importance of train data
+        
+        Returns:
+            plot with feature importances of training data
+        """
+        dateCols = self.train_data[0:2]
+        plt.style.use('default')
+        inputCols = self.train_data.columns[2:18].tolist() + dateCols
+        plt.figure().set_size_inches(16.5, 8.5)
+        plt.bar(range(len(inputCols)), self.model.named_steps['extratreesregressor'].feature_importances_)
+        plt.title('Feature importance')
+        plt.xticks(range(len(inputCols)), inputCols, rotation='vertical')
+        plt.xlabel("Feature")
+        plt.ylabel("Importance")
+        plt.show()
+        
+    def compare_test_values(self, X_test, y_test):
+        """Comparison of real and predicted test values
+        
+        Args:
+            X_test: x val dataframe
+            y_test: y val dataframe
+
+        Returns:
+            plot comparison of real and predicted test values
+        """
+        plt.style.use('default')
+        plt.figure().set_size_inches(16.5, 8.5)
+        yhat = self.model.predict(X_test)
+        width = 0.15
+
+        # Plot the first group of bars (yhat_small) at x-coordinates 0, 1, 2, etc.
+        plt.bar(np.arange(len(y_test)), yhat, width, label='Prediction (with weather)', yerr=mean_absolute_error(y_test, yhat), color='#a0bd50')
+        plt.bar(np.arange(len(y_test)) + width, y_test, width, label='True', color='#5f5d5e')
+        plt.legend()
+        plt.xlabel('Test Data')
+        plt.ylabel('Predictions')
+        plt.title('Predictions vs. True Values')
