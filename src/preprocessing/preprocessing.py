@@ -1,10 +1,10 @@
+import logging
 import numpy as np
 import pandas as pd
 import requests
 from sklearn.model_selection import train_test_split
-import warnings
 
-warnings.filterwarnings("ignore")
+logger = logging.getLogger(__name__)
 
 
 class Preprocessing():
@@ -21,7 +21,8 @@ class Preprocessing():
                  df: pd.DataFrame) -> pd.DataFrame:
         self.df = df
     
-    def _dateEncode(self, X: pd.DataFrame) -> pd.Dataframe:
+    def _dateEncode(self, 
+                    X: pd.DataFrame) -> pd.DataFrame:
         """Convert datetime to cyclical and numerical features
         
         Args:

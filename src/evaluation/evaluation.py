@@ -1,21 +1,25 @@
-import pandas as pd
+import logging
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.base import BaseEstimator
 from sklearn.metrics import mean_absolute_error
+
+logger = logging.getLogger(__name__)
 
 class Evaluator():
     """Evaluate model and variable importances"""
     def __init__(self, 
                  config: dict[str, object],
                  train_data: pd.DataFrame,
-                 model):
+                 model: BaseEstimator):
         self.config = config
         self.train_data = train_data
         self.model = model
         
     def evaluate_model(self,                  
                        X_test: pd.DataFrame,
-                       y_test: pd.Series,):
+                       y_test: pd.Series,) -> float:
                      
         """Evaluate model performance
         
@@ -27,7 +31,7 @@ class Evaluator():
         score = mean_absolute_error(yhat, y_test)
         return score
     
-    def get_feature_importance(self):
+    def get_feature_importance(self) -> type[plt.Figure]:
         """Return feature importance of train data
         
         Returns:
@@ -44,7 +48,9 @@ class Evaluator():
         plt.ylabel("Importance")
         plt.show()
         
-    def compare_test_values(self, X_test, y_test):
+    def compare_test_values(self, 
+                            X_test: pd.DataFrame, 
+                            y_test: pd.DataFrame) -> type[plt.Figure]:
         """Comparison of real and predicted test values
         
         Args:
