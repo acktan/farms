@@ -1,6 +1,10 @@
+import logging
 import pandas as pd
-from sklearn.compose import ColumnTransformer
+from sklearn.base import BaseEstimator
 from sklearn.pipeline import make_pipeline
+from sklearn.compose import ColumnTransformer
+
+logger = logging.getLogger(__name__)
 
 class Train():
     """Train regression model
@@ -20,7 +24,7 @@ class Train():
         self.y_train = y_train
         
     def train(self, 
-              model, 
+              model: BaseEstimator, 
               date_columns: list = ['day', 'month']):
         """Train regression model
         
