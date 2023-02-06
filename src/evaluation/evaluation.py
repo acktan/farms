@@ -28,7 +28,7 @@ class Evaluator():
             y_test: y val dataframe
         """
         yhat = self.model.predict(X_test)
-        score = mean_absolute_error(yhat, y_test)
+        score = mean_absolute_error(y_test, yhat)
         return score
     
     def get_feature_importance(self) -> type[plt.Figure]:
@@ -37,16 +37,21 @@ class Evaluator():
         Returns:
             plot with feature importances of training data
         """
-        dateCols = self.train_data[0:2]
+        dateCols = self.train_data.columns[0:2].tolist()
+        inputCols = self.train_data.columns[2:9].tolist() + dateCols
+        
         plt.style.use('default')
-        inputCols = self.train_data.columns[2:18].tolist() + dateCols
         plt.figure().set_size_inches(16.5, 8.5)
         plt.bar(range(len(inputCols)), self.model.named_steps['extratreesregressor'].feature_importances_)
         plt.title('Feature importance')
         plt.xticks(range(len(inputCols)), inputCols, rotation='vertical')
         plt.xlabel("Feature")
         plt.ylabel("Importance")
-        plt.show()
+        plt.savefig(self.config['paths']['output_folder'] + 'feature_importance.jpg',
+                    dpi=300, 
+                    quality=95, 
+                    format='jpg')
+        plt.close()
         
     def compare_test_values(self, 
                             X_test: pd.DataFrame, 
@@ -66,9 +71,14 @@ class Evaluator():
         width = 0.15
 
         # Plot the first group of bars (yhat_small) at x-coordinates 0, 1, 2, etc.
-        plt.bar(np.arange(len(y_test)), yhat, width, label='Prediction (with weather)', yerr=mean_absolute_error(y_test, yhat), color='#a0bd50')
+        plt.bar(np.arange(len(y_test)), yhat, width, label='Prediction', yerr=mean_absolute_error(y_test, yhat), color='#a0bd50')
         plt.bar(np.arange(len(y_test)) + width, y_test, width, label='True', color='#5f5d5e')
         plt.legend()
         plt.xlabel('Test Data')
         plt.ylabel('Predictions')
         plt.title('Predictions vs. True Values')
+        plt.savefig(self.config['paths']['output_folder'] + 'compare_test_values.jpg',
+            dpi=300, 
+            quality=95, 
+            format='jpg')
+        plt.close()

@@ -1,0 +1,12 @@
+{
+  "paths": {
+    "directory": "",
+    "input_folder": "data/",
+    "mushroom_data": "allBatch.csv",
+    "output_folder": "output/"
+  },
+  "train": {
+    "val": 1,
+    "weather": 0
+  }
+}
