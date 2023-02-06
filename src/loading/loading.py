@@ -72,12 +72,14 @@ class DataLoader():
         logger.debug("Collecting data")
         
         path = self.directory + self.input_folder
-        dataPath = path + self.conf['paths']['mushroom_data']
-        self.df = pd.read_csv(dataPath)
+        dataPath = path + self.config['paths']['mushroom_data']
+        self.df = pd.read_csv(dataPath, index_col=0).T
+        self.df = self.df.reset_index(level=0).rename(columns={'index':'Pre-wetting date'})
+
         
-        percentColumns = self.df.columns[[4, 5, 8, 11, 12]]
+        percentColumns = self.df.columns[[4, 5, 8]]
         numericalCols = self.df.columns[2:9]
-        targetColumn = ['Kg/bag (White & Brown)']
+        targetColumn = 'Kg/bag (White & Brown)'
         self.df[percentColumns] = self.df[percentColumns].apply(lambda x : x.str.strip('%').astype(float)/100)
         self.df[numericalCols] = self.df[numericalCols].apply(pd.to_numeric, errors='coerce', downcast='float')
         self.df[targetColumn] = self.df[targetColumn].apply(pd.to_numeric, errors='coerce', downcast='float')
@@ -89,7 +91,7 @@ class DataLoader():
         
         logger.debug("Finished collecting data")
 
-        return self.df[self.df.columns[0:9]], futures[futures.columns[0:9]]
+        return self.df, futures
     
 
         

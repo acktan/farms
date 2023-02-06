@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger(__name__)
 
-
 class Preprocessing():
     """Preprocess dataset
     
