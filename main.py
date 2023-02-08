@@ -28,7 +28,7 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = preprocess.train_val_split()
     else:
         preprocess = preprocessing.Preprocessing(df_train)
-        X_train, X_test, y_train, y_test = preprocess.train_val_split(train_size=1)
+        X_train, _, y_train, _ = preprocess.train_val_split(train_size=1)
         
     training = train.Train(X_train, y_train)
     pipe = training.train(model=ExtraTreesRegressor(random_state=42))
