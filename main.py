@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 with open('config.json') as f:
     config = json.load(f)
 
-if __name__ == '__main__':
+def main():
     loader = loading.DataLoader(config)
     df_train, future = loader.get_data()
     
@@ -28,7 +28,10 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = preprocess.train_val_split()
     else:
         preprocess = preprocessing.Preprocessing(df_train)
-        X_train, _, y_train, _ = preprocess.train_val_split(train_size=1)
+        preprocess_future = preprocessing.Preprocessing(future)
+        future = preprocess_future._dateEncode(future)
+        X_train, y_train = preprocess.train_val_split(train_size=1)
+        
         
     training = train.Train(X_train, y_train)
     pipe = training.train(model=ExtraTreesRegressor(random_state=42))
@@ -41,5 +44,7 @@ if __name__ == '__main__':
         print('Test absolute mean error: {}'.format(evaluator.evaluate_model(X_test, y_test)))
     else: 
         futurePredict = inference.Inference(config, pipe, X_train, future)
-        print('Future yields are {}'.format(futurePredict.predict_future()))
-    
+        print('Future yields are {}'.format(futurePredict.predict_future()), '\nFor dates:\n{}'.format(future['Pre-wetting date']))
+
+if __name__ == '__main__':
+    raise SystemExit(main())
