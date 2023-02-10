@@ -6,7 +6,7 @@
     "output_folder": "output/"
   },
   "train": {
-    "val": 1,
-    "weather": 0
+    "val": 0,
+    "weather": 1
   }
 }

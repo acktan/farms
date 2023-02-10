@@ -1,9 +1,13 @@
+from datetime import datetime, timedelta
 import logging
 import numpy as np
 import pandas as pd
 import requests
 from sklearn.model_selection import train_test_split
+import warnings
 
+
+warnings.filterwarnings("ignore")
 logger = logging.getLogger(__name__)
 
 class Preprocessing():
@@ -53,7 +57,13 @@ class Preprocessing():
             df: mushroom dataset with aggregate weather data for time span between pre-wetting date and evacuation date (B)
         """
         
-        enddate = self.df['Evacuation date (B)'].max().strftime("%Y-%m-%d")
+
+        if self.df['Evacuation date (B)'].max() > datetime.now():
+            date = datetime.now() - timedelta(7)
+            enddate = date.strftime("%Y-%m-%d")
+        else:
+            enddate = self.df['Evacuation date (B)'].max().strftime("%Y-%m-%d")        
+                
         response = requests.get('https://archive-api.open-meteo.com/v1/archive?latitude=-1.50&longitude=29.63&start_date=2018-01-13&end_date=' 
                         + enddate 
                         +'&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,surface_pressure,rain,direct_radiation,windspeed_10m,soil_temperature_0_to_7cm,soil_moisture_0_to_7cm')
@@ -68,7 +78,7 @@ class Preprocessing():
                                                    'windspeed_10m': 'mean',
                                                    'soil_temperature_0_to_7cm':'mean',
                                                    'soil_moisture_0_to_7cm':'mean'})
-        
+                
         arr = pd.DataFrame(columns=weatherData.columns)
         inputData = self.df.loc[:, self.df.columns[0:9]]
         for i in inputData.index:
@@ -92,14 +102,19 @@ class Preprocessing():
             y_train: y training values
             y_val: y validation values  
         """
-        
-        df = self._dateEncode(self.df)
-        y = df['Kg/bag (White & Brown)']
-        X = df.drop(columns='Kg/bag (White & Brown)')
-        X_train, X_val, y_train, y_val = train_test_split(X, y, train_size=train_size, random_state=42)
-        return X_train, X_val, y_train, y_val
+        if train_size == 1:
+            df = self._dateEncode(self.df)
+            y = df['Kg/bag (White & Brown)']
+            X = df.drop(columns='Kg/bag (White & Brown)')
+            return X, y
+        else:    
+            df = self._dateEncode(self.df)
+            y = df['Kg/bag (White & Brown)']
+            X = df.drop(columns='Kg/bag (White & Brown)')
+            X_train, X_val, y_train, y_val = train_test_split(X, y, train_size=train_size, random_state=42)
+            return X_train, X_val, y_train, y_val
         
         
 
         
-    
+    datetime.now().strftime("%Y-%m-%d")

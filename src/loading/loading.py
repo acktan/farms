@@ -1,7 +1,7 @@
 import logging
 import re
 import pandas as pd
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class DataLoader():
         self.df[numericalCols] = self.df[numericalCols].applymap(lambda x: re.sub("[^0-9]", "", x) if type(x) == str else x)
         self.df = self.clean_date_columns()
         self.df = self.column_imputer(numericalCols)
-        futures = self.df[self.df['Kg/bag (White & Brown)'].isna()]
+        futures = self.df.loc[(self.df['Kg/bag (White & Brown)'].isna()) & (self.df['Evacuation date (B)'] > datetime.now())]
         self.df = self.df[~self.df['Kg/bag (White & Brown)'].isna()]
         
         logger.debug("Finished collecting data")
