@@ -15,8 +15,9 @@ class DataLoader():
         self.config = config
         self.directory = config['paths']['directory']
         self.input_folder = config['paths']['input_folder']
-        
-    def column_imputer(self, 
+    
+    @staticmethod    
+    def column_imputer(df: pd.DataFrame, 
                        cols_to_fill: dict[str, object]) -> pd.DataFrame:
         """Impute missing row data with mean
         
@@ -29,13 +30,13 @@ class DataLoader():
         
         """
         logger.debug("Started column imputation")
-        self.df['Pre-wetting date'] = self.df['Pre-wetting date'].fillna(self.df['Evacuation date (B)'] - timedelta(14))
-        diff_we = (self.df['Pre-wetting date'] - self.df['Evacuation date (B)']).mean()
-        self.df['Evacuation date (B)'] = self.df['Evacuation date (B)'].fillna(self.df['Pre-wetting date'] - diff_we)
-        mean = self.df[cols_to_fill].mean()
-        self.df[cols_to_fill] = self.df[cols_to_fill].fillna(mean)
+        df['Pre-wetting date'] = df['Pre-wetting date'].fillna(df['Evacuation date (B)'] - timedelta(14))
+        diff_we = (df['Pre-wetting date'] - df['Evacuation date (B)']).mean()
+        df['Evacuation date (B)'] = df['Evacuation date (B)'].fillna(df['Pre-wetting date'] - diff_we)
+        mean = df[cols_to_fill].mean()
+        df[cols_to_fill] = df[cols_to_fill].fillna(mean)
         logger.debug("Completed column imputation")
-        return self.df
+        return df
     
     def clean_date_columns(self) -> pd.DataFrame:
         """ Convert date columns to datetime
@@ -85,7 +86,7 @@ class DataLoader():
         self.df[targetColumn] = self.df[targetColumn].apply(pd.to_numeric, errors='coerce', downcast='float')
         self.df[numericalCols] = self.df[numericalCols].applymap(lambda x: re.sub("[^0-9]", "", x) if type(x) == str else x)
         self.df = self.clean_date_columns()
-        self.df = self.column_imputer(numericalCols)
+        self.df = DataLoader.column_imputer(self.df, numericalCols)
         futures = self.df.loc[(self.df['Kg/bag (White & Brown)'].isna()) & (self.df['Evacuation date (B)'] > datetime.now())]
         self.df = self.df[~self.df['Kg/bag (White & Brown)'].isna()]
         

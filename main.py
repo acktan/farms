@@ -18,22 +18,22 @@ def main():
     df_train, future = loader.get_data()
     
     if config['train']['weather']:
-        preprocess = preprocessing.Preprocessing(df_train)
+        preprocess = preprocessing.Preprocessing(df_train, config)
         df_train = preprocess.get_hist_weather()
-        preprocess_future = preprocessing.Preprocessing(future)
+        preprocess_future = preprocessing.Preprocessing(future, config)
         future = preprocess_future.get_hist_weather()
     
     if config['train']['val']:
-        preprocess = preprocessing.Preprocessing(df_train)
+        preprocess = preprocessing.Preprocessing(df_train, config)
         X_train, X_test, y_train, y_test = preprocess.train_val_split()
     else:
-        preprocess = preprocessing.Preprocessing(df_train)
-        preprocess_future = preprocessing.Preprocessing(future)
+        preprocess = preprocessing.Preprocessing(df_train, config)
+        preprocess_future = preprocessing.Preprocessing(future, config)
         future = preprocess_future._dateEncode(future)
         X_train, y_train = preprocess.train_val_split(train_size=1)
         
         
-    training = train.Train(X_train, y_train)
+    training = train.Train(config, X_train, y_train)
     pipe = training.train(model=ExtraTreesRegressor(random_state=42))
     
     #evaluation
