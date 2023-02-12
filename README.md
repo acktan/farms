@@ -22,7 +22,7 @@ You should be at the source of the repository structure (ie. farms) when running
 Our repository is structured in the following way:
 
 ```
-|natives_deephedging
+|farms
    |--data
    |--output
    |--src
