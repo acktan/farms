@@ -37,8 +37,12 @@ class Evaluator():
         Returns:
             plot with feature importances of training data
         """
+        
         dateCols = self.train_data.columns[0:2].tolist()
-        inputCols = self.train_data.columns[2:9].tolist() + dateCols
+        if self.config['train']['weather']:
+            inputCols = self.train_data.columns[2:18].tolist() + dateCols
+        else: 
+            inputCols = self.train_data.columns[2:9].tolist() + dateCols
         
         plt.style.use('default')
         plt.figure().set_size_inches(16.5, 8.5)

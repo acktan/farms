@@ -4,13 +4,14 @@ import numpy as np
 import pandas as pd
 import requests
 from sklearn.model_selection import train_test_split
+from src.loading.loading import DataLoader
 import warnings
 
 
 warnings.filterwarnings("ignore")
 logger = logging.getLogger(__name__)
 
-class Preprocessing():
+class Preprocessing(DataLoader):
     """Preprocess dataset
     
     Args:
@@ -21,7 +22,9 @@ class Preprocessing():
         
     """
     def __init__(self, 
-                 df: pd.DataFrame) -> pd.DataFrame:
+                 df: pd.DataFrame,
+                 config: dict[str, str]) -> pd.DataFrame:
+        super().__init__(config)
         self.df = df
     
     def _dateEncode(self, 
@@ -88,7 +91,7 @@ class Preprocessing():
             
         df = pd.concat([inputData, arr], axis=1)
         df = pd.concat([df, self.df['Kg/bag (White & Brown)']], axis=1)
-        return df
+        return DataLoader.column_imputer(df, df.columns)
         
     def train_val_split(self, 
                         train_size: float=0.8) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:

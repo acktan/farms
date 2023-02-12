@@ -14,9 +14,11 @@ class Train():
         y_train: y training dateframe
     """
     
-    def __init__(self, 
+    def __init__(self,
+                 config: dict[str, str],
                  X_train: pd.DataFrame, 
                  y_train: pd.DataFrame):
+        self.config = config
         self.X_train = X_train
         self.y_train = y_train
         
@@ -33,10 +35,15 @@ class Train():
             pipe = trained model
         """
         
+        if self.config['train']['weather']:
+            input_cols = self.X_train.columns[2:18]
+        else:
+            input_cols = self.X_train.columns[2:9]
+            
         preprocessor = ColumnTransformer(
                 [
                     ('dateEncode', 'passthrough', date_columns),
-                    ('imputer', 'passthrough', self.X_train.columns[2:9]),
+                    ('imputer', 'passthrough', input_cols),
                 ]
         )
 
