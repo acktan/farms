@@ -11,7 +11,7 @@ class TestDataLoader(unittest.TestCase):
         self.config = {
             'paths': {
                 'directory': '',
-                'input_folder': '../data/',
+                'input_folder': 'data/',
                 'mushroom_data': 'allBatch.csv'
             }
         }
@@ -22,8 +22,7 @@ class TestDataLoader(unittest.TestCase):
             'Column1': [1, 2, 3],
             'Column2': [4, None, 6]
         })
-        self.df, _ = self.dataloader.get_data()
-        self.cleaned_df = self.dataloader.clean_date_columns()
+        self.cleaned_df = self.dataloader.clean_date_columns(self.df)
 
     
     def test_column_imputer(self):

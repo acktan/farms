@@ -38,7 +38,8 @@ class DataLoader():
         logger.debug("Completed column imputation")
         return df
     
-    def clean_date_columns(self) -> pd.DataFrame:
+    @staticmethod
+    def clean_date_columns(df: pd.DataFrame) -> pd.DataFrame:
         """ Convert date columns to datetime
         
         Args:
@@ -50,14 +51,14 @@ class DataLoader():
         """
         logger.debug("Started column cleaning")
 
-        self.df['Pre-wetting date'] = pd.to_datetime(self.df['Pre-wetting date'],
+        df['Pre-wetting date'] = pd.to_datetime(df['Pre-wetting date'],
                                                 format="%d-%b-%y",
                                                 errors='coerce')
-        self.df['Evacuation date (B)'] = pd.to_datetime(self.df['Evacuation date (B)'], 
+        df['Evacuation date (B)'] = pd.to_datetime(df['Evacuation date (B)'], 
                                                    format="%d-%b-%y",
                                                    errors='coerce')
         logger.debug("Completed column cleaning")
-        return self.df
+        return df
     
     def get_data(self) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Return train and future data
@@ -85,7 +86,7 @@ class DataLoader():
         self.df[numericalCols] = self.df[numericalCols].apply(pd.to_numeric, errors='coerce', downcast='float')
         self.df[targetColumn] = self.df[targetColumn].apply(pd.to_numeric, errors='coerce', downcast='float')
         self.df[numericalCols] = self.df[numericalCols].applymap(lambda x: re.sub("[^0-9]", "", x) if type(x) == str else x)
-        self.df = self.clean_date_columns()
+        self.df = DataLoader.clean_date_columns(self.df)
         self.df = DataLoader.column_imputer(self.df, numericalCols)
         futures = self.df.loc[(self.df['Kg/bag (White & Brown)'].isna()) & (self.df['Evacuation date (B)'] > datetime.now())]
         self.df = self.df[~self.df['Kg/bag (White & Brown)'].isna()]
@@ -94,5 +95,3 @@ class DataLoader():
 
         return self.df, futures
     
-
-        
