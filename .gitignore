@@ -130,3 +130,4 @@ dmypy.json
 
 #other folders
 output/
+data/
